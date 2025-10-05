@@ -10,12 +10,11 @@ import SwiftData
 
 struct EditEventView: View {
     
-    @Bindable var event: Event
+    @Bindable var event: Tag
     
     var body: some View {
         Form {
             TextField("Name of event", text: $event.name)
-            TextField("Location", text: $event.location)
         }
         .navigationTitle("Edit Event")
         .navigationBarTitleDisplayMode(.inline)

@@ -13,10 +13,10 @@ class Person {
     var name: String = ""
     var emailAddress: String = ""
     var details: String = ""
-    var metAt: Event?
+    var metAt: Tag?
     @Attribute(.externalStorage) var photo: Data?
     
-    init(name: String, emailAddress: String, details: String, metAt: Event? = nil) {
+    init(name: String, emailAddress: String, details: String, metAt: Tag? = nil) {
         self.name = name
         self.emailAddress = emailAddress
         self.details = details

@@ -1,5 +1,5 @@
 //
-//  Event.swift
+//  Tag.swift
 //  SwiftDataExample
 //
 //  Created by Angelo Andrioli Netho on 03/10/25.
@@ -8,13 +8,11 @@
 import SwiftData
 
 @Model
-class Event {
+class Tag {
     var name: String = ""
-    var location: String = ""
     var people: [Person]? = [Person]()
     
-    init(name: String, location: String) {
+    init(name: String) {
         self.name = name
-        self.location = location
     }
 }

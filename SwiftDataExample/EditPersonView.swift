@@ -14,9 +14,8 @@ struct EditPersonView: View {
     @State private var selectedItem: PhotosPickerItem?
     
     @Query(sort: [
-        SortDescriptor(\Event.name),
-        SortDescriptor(\Event.location)
-    ]) var events: [Event]
+        SortDescriptor(\Tag.name),
+    ]) var events: [Tag]
     
     @Bindable var person: Person
     
@@ -25,7 +24,7 @@ struct EditPersonView: View {
     @Binding var navigationPath: NavigationPath
     
     func addEvent() {
-        let event = Event(name: "", location: "")
+        let event = Tag(name: "")
         modelContext.insert(event)
         navigationPath.append(event)
     }
@@ -63,7 +62,7 @@ struct EditPersonView: View {
             Section("Where did you meet them?") {
                 Picker("Met at", selection: $person.metAt) {
                     Text("Unkown event")
-                        .tag(Optional<Event>.none)
+                        .tag(Optional<Tag>.none)
                     
                     if events.isEmpty == false {
                         Divider()
@@ -84,7 +83,7 @@ struct EditPersonView: View {
         }
         .navigationTitle("Edit Person")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(for: Event.self) { event in
+        .navigationDestination(for: Tag.self) { event in
                 EditEventView(event: event)
         }
         .onChange(of: selectedItem, loadPhoto)
