@@ -79,21 +79,22 @@ struct EditDiaryEntryView: View {
                 Button("Add a new tag", action: addTag)
             }
             
-            Section("What are you feeling?") {
-                Picker("Emotion", selection: $diaryEntry.emotion) {
-                    Text("Unkown emotion")
-                        .tag(Optional<Emotion>.none)
-                    
-                    if emotions.isEmpty == false {
-                        Divider()
-                        
-                        ForEach(emotions) { emotion in
-                            Text(emotion.name)
-                                .tag(Optional(emotion))
+            Section("Emotions") {
+                ForEach(emotions) { emotion in
+                    let isOn = Binding(
+                        get: { diaryEntry.emotions?.contains(where: { $0.id == emotion.id }) ?? false },
+                        set: { on in
+                            if on {
+                                diaryEntry.emotions = (diaryEntry.emotions ?? []) + [emotion]
+                            } else {
+                                diaryEntry.emotions?.removeAll { $0.id == emotion.id }
+                                if diaryEntry.emotions?.isEmpty == true { diaryEntry.emotions = nil }
+                            }
                         }
-                    }
+                    )
+                    Toggle(emotion.name, isOn: isOn)
                 }
-                
+
                 Button("Add a new emotion", action: addEmotion)
             }
             

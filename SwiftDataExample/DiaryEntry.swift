@@ -13,13 +13,12 @@ class DiaryEntry {
     var details: String = ""
     
     @Relationship(inverse: \Tag.diaryEntries) var tags: [Tag]? = [Tag]()
-    
-    var emotion: Emotion?
+    @Relationship(inverse: \Tag.diaryEntries) var emotions: [Emotion]? = [Emotion]()
     @Attribute(.externalStorage) var photo: Data?
     
-    init(details: String, tags: [Tag] = [], emotion: Emotion? = nil) {
+    init(details: String, tags: [Tag] = [], emotions: [Emotion] = []) {
         self.details = details
         self.tags = tags
-        self.emotion = emotion
+        self.emotions = emotions
     }
 }
