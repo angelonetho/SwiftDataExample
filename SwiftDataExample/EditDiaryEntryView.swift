@@ -11,7 +11,7 @@ import PhotosUI
 
 struct EditDiaryEntryView: View {
     
-    @State private var selectedItem: PhotosPickerItem?
+    @State private var selectedItems: [PhotosPickerItem] = []
     
     @Query(sort: [
         SortDescriptor(\Tag.name),
@@ -39,24 +39,46 @@ struct EditDiaryEntryView: View {
         navigationPath.append(emotion)
     }
     
-    func loadPhoto() {
-        Task { @MainActor in
-            diaryEntry.photo = try await selectedItem?.loadTransferable(type: Data.self)
+    func loadPhotos() {
+        let items = selectedItems
+        guard !items.isEmpty else { return }
+
+        Task(priority: .userInitiated) {
+            var newDatas: [Data] = []
+            for item in items {
+                if let data = try? await item.loadTransferable(type: Data.self) {
+                    newDatas.append(data)
+                }
+            }
+            await MainActor.run {
+                if !newDatas.isEmpty {
+                    diaryEntry.photos = (diaryEntry.photos ?? []) + newDatas
+                }
+                selectedItems.removeAll()
+            }
         }
     }
     
     var body: some View {
         
         Form {
-            if let imageData = diaryEntry.photo, let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFit()
+            if let photos = diaryEntry.photos, !photos.isEmpty {
+                ForEach(photos, id: \.self) { data in
+                    if let uiImage = UIImage(data: data) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFit()
+                    }
+                }
             }
+
+
             
             Section {
-                PhotosPicker(selection: $selectedItem, matching: .images) {
-                    Label("Select a photo", systemImage: "person")
+                PhotosPicker(selection: $selectedItems,
+                             maxSelectionCount: 10,
+                             matching: .images) {
+                    Label("Selecionar fotos", systemImage: "photo.on.rectangle")
                 }
             }
             
@@ -110,7 +132,7 @@ struct EditDiaryEntryView: View {
         .navigationDestination(for: Emotion.self) { emotion in
                 EditEmotionView(emotion: emotion)
         }
-        .onChange(of: selectedItem, loadPhoto)
+        .onChange(of: selectedItems, loadPhotos)
     }
 }
 

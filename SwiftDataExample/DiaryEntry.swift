@@ -15,7 +15,8 @@ class DiaryEntry {
     
     @Relationship(inverse: \Tag.diaryEntries) var tags: [Tag]? = [Tag]()
     @Relationship(inverse: \Tag.diaryEntries) var emotions: [Emotion]? = [Emotion]()
-    @Attribute(.externalStorage) var photo: Data?
+    
+    @Attribute(.externalStorage) var photos: [Data]? = [Data]()
     
     init(details: String, tags: [Tag] = [], emotions: [Emotion] = []) {
         self.details = details
