@@ -11,6 +11,7 @@ import Foundation
 @Model
 class DiaryEntry {
     var details: String = ""
+    var createdAt: Date = Date()
     
     @Relationship(inverse: \Tag.diaryEntries) var tags: [Tag]? = [Tag]()
     @Relationship(inverse: \Tag.diaryEntries) var emotions: [Emotion]? = [Emotion]()

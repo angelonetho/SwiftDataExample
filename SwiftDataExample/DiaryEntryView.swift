@@ -33,11 +33,19 @@ struct DiaryEntryView: View {
         }
     }
     
+    private var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter
+    }
+    
     var body: some View {
         List {
             ForEach(diaryEntry) { diaryEntry in
                 NavigationLink(value: diaryEntry) {
                     Text(diaryEntry.details)
+                    Text(dateFormatter.string(from: diaryEntry.createdAt))
                 }
             }
             .onDelete(perform: deletePeople)
