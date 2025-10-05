@@ -1,5 +1,5 @@
 //
-//  EditEventView.swift
+//  EditTagView.swift
 //  SwiftDataExample
 //
 //  Created by Angelo Andrioli Netho on 03/10/25.
@@ -8,15 +8,15 @@
 import SwiftUI
 import SwiftData
 
-struct EditEventView: View {
+struct EditTagView: View {
     
-    @Bindable var event: Tag
+    @Bindable var tag: Tag
     
     var body: some View {
         Form {
-            TextField("Name of event", text: $event.name)
+            TextField("Name of the tag", text: $tag.name)
         }
-        .navigationTitle("Edit Event")
+        .navigationTitle("Edit Tag")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -25,7 +25,7 @@ struct EditEventView: View {
     do {
         let previewer = try Previewer()
 
-        return EditEventView(event: previewer.event)
+        return EditTagView(tag: previewer.tag)
             .modelContainer(previewer.container)
     } catch {
         return Text("Failed to create preview: \(error.localizedDescription)")

@@ -16,35 +16,35 @@ struct ContentView: View {
     
     @State private var searchText = ""
     
-    @State private var sortOrder = [SortDescriptor(\Person.name)]
+    @State private var sortOrder = [SortDescriptor(\DiaryEntry.details)]
     
-    func addPerson() {
-        let person = Person(name: "", emailAddress: "", details: "")
+    func addDiaryEntry() {
+        let diaryEntry = DiaryEntry(details: "")
         
-        path.append(person)
+        path.append(diaryEntry)
         
-        modelContext.insert(person)
+        modelContext.insert(diaryEntry)
     }
     
     var body: some View {
         NavigationStack(path: $path) {
-            PeopleView(searchString: searchText, sortOrder: sortOrder)
+            DiaryEntryView(searchString: searchText, sortOrder: sortOrder)
                 .navigationTitle("FaceFacts")
-                .navigationDestination(for: Person.self) { person in
-                    EditPersonView(person: person, navigationPath: $path)
+                .navigationDestination(for: DiaryEntry.self) { person in
+                    EditDiaryEntryView(person: person, navigationPath: $path)
                 }
                 .toolbar {
                     Menu("Sort", systemImage: "arrow.up.arrow.down") {
                         Picker("Sort", selection: $sortOrder) {
                             Text("Name (A-Z)")
-                                .tag([SortDescriptor(\Person.name)])
+                                //.tag([SortDescriptor(\DiaryEntry., order: .forward)])
                             Text("Name (Z-A)")
-                                .tag([SortDescriptor(\Person.name, order: .reverse)])
+                                //.tag([SortDescriptor(\DiaryEntry.name, order: .reverse)])
                         }
                     }
                     
                     
-                    Button("Add Person", systemImage: "plus", action: addPerson)
+                    Button("Add Diary Entry", systemImage: "plus", action: addDiaryEntry)
                 }
                 .searchable(text: $searchText)
         }

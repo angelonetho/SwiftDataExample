@@ -1,5 +1,5 @@
 //
-//  EditPersonView.swift
+//  EditDiaryEntryView.swift
 //  SwiftDataExample
 //
 //  Created by Angelo Andrioli Netho on 03/10/25.
@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
-struct EditPersonView: View {
+struct EditDiaryEntryView: View {
     
     @State private var selectedItem: PhotosPickerItem?
     
@@ -17,7 +17,7 @@ struct EditPersonView: View {
         SortDescriptor(\Tag.name),
     ]) var events: [Tag]
     
-    @Bindable var person: Person
+    @Bindable var person: DiaryEntry
     
     @Environment(\.modelContext) var modelContext
     
@@ -50,17 +50,8 @@ struct EditPersonView: View {
                 }
             }
             
-            Section {
-                TextField("Name", text: $person.name)
-                    .textContentType(.name)
-                
-                TextField("Email address", text: $person.emailAddress)
-                    .textContentType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-            }
-            
             Section("Where did you meet them?") {
-                Picker("Met at", selection: $person.metAt) {
+                Picker("Met at", selection: $person.tag) {
                     Text("Unkown event")
                         .tag(Optional<Tag>.none)
                     
@@ -74,17 +65,17 @@ struct EditPersonView: View {
                     }
                 }
                 
-                Button("Add a new event", action: addEvent)
+                Button("Add a new tag", action: addEvent)
             }
             
             Section("Notes") {
                 TextField("Details about this person", text: $person.details, axis: .vertical)
             }
         }
-        .navigationTitle("Edit Person")
+        .navigationTitle("Edit Diary Entry")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Tag.self) { event in
-                EditEventView(event: event)
+                EditTagView(tag: event)
         }
         .onChange(of: selectedItem, loadPhoto)
     }
@@ -94,7 +85,7 @@ struct EditPersonView: View {
     do {
         let previewer = try Previewer()
 
-        return EditPersonView(person: previewer.person, navigationPath: .constant(NavigationPath()))
+        return EditDiaryEntryView(person: previewer.diaryEntry, navigationPath: .constant(NavigationPath()))
             .modelContainer(previewer.container)
     } catch {
         return Text("Failed to create preview: \(error.localizedDescription)")

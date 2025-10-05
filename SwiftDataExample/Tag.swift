@@ -10,7 +10,7 @@ import SwiftData
 @Model
 class Tag {
     var name: String = ""
-    var people: [Person]? = [Person]()
+    var diaryEntries: [DiaryEntry]? = [DiaryEntry]()
     
     init(name: String) {
         self.name = name

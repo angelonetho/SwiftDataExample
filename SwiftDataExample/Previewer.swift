@@ -8,16 +8,16 @@
 import SwiftData
 struct Previewer {
     let container: ModelContainer
-    let event: Tag
-    let person: Person
+    let tag: Tag
+    let diaryEntry: DiaryEntry
     
     init() throws {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        container = try ModelContainer(for: Person.self, configurations: config)
+        container = try ModelContainer(for: DiaryEntry.self, configurations: config)
         
-        event = Tag(name: "Katy Perry Concert")
-        person = Person(name: "Petter Griffin", emailAddress: "petter.griffin@pucpr.edu.br", details: "", metAt: event)
+        tag = Tag(name: "Work")
+        diaryEntry = DiaryEntry(details: "", tag: tag)
         
-        container.mainContext.insert(person)
+        container.mainContext.insert(diaryEntry)
     }
 }
