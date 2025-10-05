@@ -40,6 +40,14 @@ struct ContentView: View {
                     EditDiaryEntryView(diaryEntry: person, navigationPath: $path)
                 }
                 .toolbar {
+                    NavigationLink {
+                        ExportView()
+                    } label: {
+                        Label("Export", systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Button("Add Diary Entry", systemImage: "plus", action: addDiaryEntry)
+                    
                     Menu("Sort", systemImage: "arrow.up.arrow.down") {
                         Picker("Sort", selection: $sortOrder) {
                             Text("Mais recentes primeiro")
@@ -48,9 +56,7 @@ struct ContentView: View {
                                 .tag([SortDescriptor(\DiaryEntry.createdAt, order: .forward)])
                         }
                     }
-                    
-                    
-                    Button("Add Diary Entry", systemImage: "plus", action: addDiaryEntry)
+
                 }
                 .searchable(text: $searchText)
                 .searchSuggestions {
