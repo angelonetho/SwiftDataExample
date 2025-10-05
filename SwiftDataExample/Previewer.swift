@@ -18,7 +18,7 @@ struct Previewer {
         
         tag = Tag(name: "Work")
         emotion = Emotion(name: "Tristeza")
-        diaryEntry = DiaryEntry(details: "", tag: tag)
+        diaryEntry = DiaryEntry(details: "", tags: [tag])
         
         container.mainContext.insert(diaryEntry)
     }

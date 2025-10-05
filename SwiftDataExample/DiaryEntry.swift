@@ -11,13 +11,15 @@ import Foundation
 @Model
 class DiaryEntry {
     var details: String = ""
-    var tag: Tag?
+    
+    @Relationship(inverse: \Tag.diaryEntries) var tags: [Tag]? = [Tag]()
+    
     var emotion: Emotion?
     @Attribute(.externalStorage) var photo: Data?
     
-    init(details: String, tag: Tag? = nil, emotion: Emotion? = nil) {
+    init(details: String, tags: [Tag] = [], emotion: Emotion? = nil) {
         self.details = details
-        self.tag = tag
+        self.tags = tags
         self.emotion = emotion
     }
 }

@@ -60,21 +60,22 @@ struct EditDiaryEntryView: View {
                 }
             }
             
-            Section("What this is related to?") {
-                Picker("Met at", selection: $diaryEntry.tag) {
-                    Text("Unkown event")
-                        .tag(Optional<Tag>.none)
-                    
-                    if tags.isEmpty == false {
-                        Divider()
-                        
-                        ForEach(tags) { tag in
-                            Text(tag.name)
-                                .tag(Optional(tag))
+            Section("Tags") {
+                ForEach(tags) { tag in
+                    let isOn = Binding(
+                        get: { diaryEntry.tags?.contains(where: { $0.id == tag.id }) ?? false },
+                        set: { on in
+                            if on {
+                                diaryEntry.tags = (diaryEntry.tags ?? []) + [tag]
+                            } else {
+                                diaryEntry.tags?.removeAll { $0.id == tag.id }
+                                if diaryEntry.tags?.isEmpty == true { diaryEntry.tags = nil }
+                            }
                         }
-                    }
+                    )
+                    Toggle(tag.name, isOn: isOn)
                 }
-                
+
                 Button("Add a new tag", action: addTag)
             }
             

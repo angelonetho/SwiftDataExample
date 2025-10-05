@@ -16,7 +16,7 @@ struct DiaryEntryView: View {
                 true
             } else {
                 diaryEntry.details.localizedStandardContains(searchString)
-                || ((diaryEntry.tag?.name.localizedStandardContains(searchString)) != nil)
+                //|| ((diaryEntry.tag?.name.localizedStandardContains(searchString)) != nil)
             }
            
         }, sort: sortOrder)
