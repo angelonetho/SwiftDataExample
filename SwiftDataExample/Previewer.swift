@@ -9,6 +9,7 @@ import SwiftData
 struct Previewer {
     let container: ModelContainer
     let tag: Tag
+    let emotion: Emotion
     let diaryEntry: DiaryEntry
     
     init() throws {
@@ -16,6 +17,7 @@ struct Previewer {
         container = try ModelContainer(for: DiaryEntry.self, configurations: config)
         
         tag = Tag(name: "Work")
+        emotion = Emotion(name: "Tristeza")
         diaryEntry = DiaryEntry(details: "", tag: tag)
         
         container.mainContext.insert(diaryEntry)

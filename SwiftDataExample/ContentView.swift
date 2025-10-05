@@ -29,9 +29,9 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $path) {
             DiaryEntryView(searchString: searchText, sortOrder: sortOrder)
-                .navigationTitle("FaceFacts")
+                .navigationTitle("Jupiter")
                 .navigationDestination(for: DiaryEntry.self) { person in
-                    EditDiaryEntryView(person: person, navigationPath: $path)
+                    EditDiaryEntryView(diaryEntry: person, navigationPath: $path)
                 }
                 .toolbar {
                     Menu("Sort", systemImage: "arrow.up.arrow.down") {

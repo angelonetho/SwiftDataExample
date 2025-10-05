@@ -12,10 +12,12 @@ import Foundation
 class DiaryEntry {
     var details: String = ""
     var tag: Tag?
+    var emotion: Emotion?
     @Attribute(.externalStorage) var photo: Data?
     
-    init(details: String, tag: Tag? = nil) {
+    init(details: String, tag: Tag? = nil, emotion: Emotion? = nil) {
         self.details = details
         self.tag = tag
+        self.emotion = emotion
     }
 }

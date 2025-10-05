@@ -15,30 +15,40 @@ struct EditDiaryEntryView: View {
     
     @Query(sort: [
         SortDescriptor(\Tag.name),
-    ]) var events: [Tag]
+    ]) var tags: [Tag]
     
-    @Bindable var person: DiaryEntry
+    @Query(sort: [
+        SortDescriptor(\Emotion.name),
+    ]) var emotions: [Emotion]
+    
+    @Bindable var diaryEntry: DiaryEntry
     
     @Environment(\.modelContext) var modelContext
     
     @Binding var navigationPath: NavigationPath
     
-    func addEvent() {
-        let event = Tag(name: "")
-        modelContext.insert(event)
-        navigationPath.append(event)
+    func addTag() {
+        let tag = Tag(name: "")
+        modelContext.insert(tag)
+        navigationPath.append(tag)
+    }
+    
+    func addEmotion() {
+        let emotion = Emotion(name: "")
+        modelContext.insert(emotion)
+        navigationPath.append(emotion)
     }
     
     func loadPhoto() {
         Task { @MainActor in
-            person.photo = try await selectedItem?.loadTransferable(type: Data.self)
+            diaryEntry.photo = try await selectedItem?.loadTransferable(type: Data.self)
         }
     }
     
     var body: some View {
         
         Form {
-            if let imageData = person.photo, let uiImage = UIImage(data: imageData) {
+            if let imageData = diaryEntry.photo, let uiImage = UIImage(data: imageData) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFit()
@@ -50,32 +60,53 @@ struct EditDiaryEntryView: View {
                 }
             }
             
-            Section("Where did you meet them?") {
-                Picker("Met at", selection: $person.tag) {
+            Section("What this is related to?") {
+                Picker("Met at", selection: $diaryEntry.tag) {
                     Text("Unkown event")
                         .tag(Optional<Tag>.none)
                     
-                    if events.isEmpty == false {
+                    if tags.isEmpty == false {
                         Divider()
                         
-                        ForEach(events) { event in
-                            Text(event.name)
-                                .tag(Optional(event))
+                        ForEach(tags) { tag in
+                            Text(tag.name)
+                                .tag(Optional(tag))
                         }
                     }
                 }
                 
-                Button("Add a new tag", action: addEvent)
+                Button("Add a new tag", action: addTag)
+            }
+            
+            Section("What are you feeling?") {
+                Picker("Emotion", selection: $diaryEntry.emotion) {
+                    Text("Unkown emotion")
+                        .tag(Optional<Emotion>.none)
+                    
+                    if emotions.isEmpty == false {
+                        Divider()
+                        
+                        ForEach(emotions) { emotion in
+                            Text(emotion.name)
+                                .tag(Optional(emotion))
+                        }
+                    }
+                }
+                
+                Button("Add a new emotion", action: addEmotion)
             }
             
             Section("Notes") {
-                TextField("Details about this person", text: $person.details, axis: .vertical)
+                TextField("Details about this person", text: $diaryEntry.details, axis: .vertical)
             }
         }
         .navigationTitle("Edit Diary Entry")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(for: Tag.self) { event in
-                EditTagView(tag: event)
+        .navigationDestination(for: Tag.self) { tag in
+                EditTagView(tag: tag)
+        }
+        .navigationDestination(for: Emotion.self) { emotion in
+                EditEmotionView(emotion: emotion)
         }
         .onChange(of: selectedItem, loadPhoto)
     }
@@ -85,7 +116,7 @@ struct EditDiaryEntryView: View {
     do {
         let previewer = try Previewer()
 
-        return EditDiaryEntryView(person: previewer.diaryEntry, navigationPath: .constant(NavigationPath()))
+        return EditDiaryEntryView(diaryEntry: previewer.diaryEntry, navigationPath: .constant(NavigationPath()))
             .modelContainer(previewer.container)
     } catch {
         return Text("Failed to create preview: \(error.localizedDescription)")
