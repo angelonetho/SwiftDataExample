@@ -8,19 +8,28 @@
 import SwiftUI
 import SwiftData
 
-struct DiaryEntryView: View {
-    
+struct DiaryEntryView: View {    
     init(searchString: String = "", sortOrder: [SortDescriptor<DiaryEntry>] = []) {
-        _diaryEntry = Query(filter: #Predicate { diaryEntry in
-            if searchString.isEmpty {
-                true
-            } else {
-                diaryEntry.details.localizedStandardContains(searchString)
-                //|| ((diaryEntry.tag?.name.localizedStandardContains(searchString)) != nil)
-            }
-           
-        }, sort: sortOrder)
+        _diaryEntry = Query(
+            filter: #Predicate<DiaryEntry> { entry in
+                if searchString.isEmpty {
+                    true
+                } else {
+                    ((entry.tags?.contains { tag in
+                        tag.name.localizedStandardContains(searchString)
+                    }) ?? false)
+                    ||
+                    ((entry.emotions?.contains { emotion in
+                        emotion.name.localizedStandardContains(searchString)
+                    }) ?? false)
+                    ||
+                    entry.details.localizedStandardContains(searchString)
+                }
+            },
+            sort: sortOrder
+        )
     }
+
     
     @Query var diaryEntry: [DiaryEntry]
     

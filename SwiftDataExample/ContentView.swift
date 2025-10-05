@@ -18,6 +18,12 @@ struct ContentView: View {
     
     @State private var sortOrder = [SortDescriptor(\DiaryEntry.details)]
     
+    @Query(sort: [SortDescriptor(\Tag.name, order: .forward)])
+    private var tags: [Tag]
+    
+    @Query(sort: [SortDescriptor(\Emotion.name, order: .forward)])
+    private var emotions: [Emotion]
+    
     func addDiaryEntry() {
         let diaryEntry = DiaryEntry(details: "")
         
@@ -36,10 +42,10 @@ struct ContentView: View {
                 .toolbar {
                     Menu("Sort", systemImage: "arrow.up.arrow.down") {
                         Picker("Sort", selection: $sortOrder) {
-                            Text("Name (A-Z)")
-                                //.tag([SortDescriptor(\DiaryEntry., order: .forward)])
-                            Text("Name (Z-A)")
-                                //.tag([SortDescriptor(\DiaryEntry.name, order: .reverse)])
+                            Text("Mais recentes primeiro")
+                                .tag([SortDescriptor(\DiaryEntry.createdAt, order: .reverse)])
+                            Text("Mais antigas primeiro")
+                                .tag([SortDescriptor(\DiaryEntry.createdAt, order: .forward)])
                         }
                     }
                     
@@ -47,6 +53,16 @@ struct ContentView: View {
                     Button("Add Diary Entry", systemImage: "plus", action: addDiaryEntry)
                 }
                 .searchable(text: $searchText)
+                .searchSuggestions {
+                    ForEach(tags) { tag in
+                        Text("#\(tag.name)")
+                            .searchCompletion(tag.name)
+                    }
+                    ForEach(emotions) { emotion in
+                        Text("#\(emotion.name)")
+                            .searchCompletion(emotion.name)
+                    }
+                }
         }
     }
 }
