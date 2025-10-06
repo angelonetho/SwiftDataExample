@@ -20,6 +20,7 @@ struct ExportView: View {
     
     private var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         return formatter
@@ -98,7 +99,7 @@ struct ExportView: View {
         let summaryBlock = summaryLines.joined(separator: "\n")
 
         // Entradas detalhadas
-        let separator = String(repeating: "—", count: 24)
+        let separator = String(repeating: "—", count: 18)
         let entryBlocks: [String] = filteredEntries.map { entry in
             let details = entry.details.isEmpty ? "(Sem descrição)" : entry.details
             let emotions = (entry.emotions ?? []).map { $0.name }.joined(separator: ", ")
@@ -170,7 +171,7 @@ struct ExportView: View {
                 )
             }
             
-            Section(header: Text("Entradas (") + Text("\(filteredEntries.count)") + Text(")")) {
+            Section(header: Text("Entradas (\(filteredEntries.count))")) {
                 if filteredEntries.isEmpty {
                     ContentUnavailableView("Sem entradas no período", systemImage: "calendar")
                 } else {
@@ -221,4 +222,3 @@ private extension Date {
 #Preview {
     ExportView()
 }
-

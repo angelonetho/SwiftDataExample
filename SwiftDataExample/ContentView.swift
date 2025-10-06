@@ -35,7 +35,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $path) {
             DiaryEntryView(searchString: searchText, sortOrder: sortOrder)
-                .navigationTitle("Jupiter")
+                .navigationTitle("Haru Diary")
                 .navigationDestination(for: DiaryEntry.self) { person in
                     EditDiaryEntryView(diaryEntry: person, navigationPath: $path)
                 }
@@ -43,10 +43,10 @@ struct ContentView: View {
                     NavigationLink {
                         ExportView()
                     } label: {
-                        Label("Export", systemImage: "square.and.arrow.up")
+                        Label("Exportar Relatório", systemImage: "square.and.arrow.up")
                     }
                     
-                    Button("Add Diary Entry", systemImage: "plus", action: addDiaryEntry)
+                    Button("Adicionar nova entrada", systemImage: "plus", action: addDiaryEntry)
                     
                     Menu("Sort", systemImage: "arrow.up.arrow.down") {
                         Picker("Sort", selection: $sortOrder) {
@@ -58,7 +58,7 @@ struct ContentView: View {
                     }
 
                 }
-                .searchable(text: $searchText)
+                .searchable(text: $searchText, prompt: "Pesquisar")
                 .searchSuggestions {
                     ForEach(tags) { tag in
                         Text("#\(tag.name)")

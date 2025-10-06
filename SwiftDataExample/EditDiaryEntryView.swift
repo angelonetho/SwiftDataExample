@@ -98,10 +98,10 @@ struct EditDiaryEntryView: View {
                     Toggle(tag.name, isOn: isOn)
                 }
 
-                Button("Add a new tag", action: addTag)
+                Button("Adicionar uma nova tag", action: addTag)
             }
             
-            Section("Emotions") {
+            Section("Emoções") {
                 ForEach(emotions) { emotion in
                     let isOn = Binding(
                         get: { diaryEntry.emotions?.contains(where: { $0.id == emotion.id }) ?? false },
@@ -117,14 +117,14 @@ struct EditDiaryEntryView: View {
                     Toggle(emotion.name, isOn: isOn)
                 }
 
-                Button("Add a new emotion", action: addEmotion)
+                Button("Adicionar uma nova emoção", action: addEmotion)
             }
             
-            Section("Notes") {
-                TextField("Details about this person", text: $diaryEntry.details, axis: .vertical)
+            Section("Notas") {
+                TextField("Detalhes sobre o que aconteceu", text: $diaryEntry.details, axis: .vertical)
             }
         }
-        .navigationTitle("Edit Diary Entry")
+        .navigationTitle("Editar Entrada do Diário")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Tag.self) { tag in
                 EditTagView(tag: tag)
@@ -146,3 +146,4 @@ struct EditDiaryEntryView: View {
         return Text("Failed to create preview: \(error.localizedDescription)")
     }
 }
+

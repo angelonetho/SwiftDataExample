@@ -14,9 +14,9 @@ struct EditTagView: View {
     
     var body: some View {
         Form {
-            TextField("Name of the tag", text: $tag.name)
+            TextField("Nome da tag", text: $tag.name)
         }
-        .navigationTitle("Edit Tag")
+        .navigationTitle("Editar tag")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

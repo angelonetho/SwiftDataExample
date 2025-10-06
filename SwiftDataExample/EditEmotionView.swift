@@ -14,9 +14,9 @@ struct EditEmotionView: View {
     
     var body: some View {
         Form {
-            TextField("Name of the emotion", text: $emotion.name)
+            TextField("Nome da emoção", text: $emotion.name)
         }
-        .navigationTitle("Edit Emotion")
+        .navigationTitle("Editar emoção")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -31,3 +31,4 @@ struct EditEmotionView: View {
         return Text("Failed to create preview: \(error.localizedDescription)")
     }
 }
+

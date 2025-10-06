@@ -13,6 +13,7 @@ struct SwiftDataExampleApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.locale, Locale(identifier: "pt_BR"))
         }
         .modelContainer(for: DiaryEntry.self)
     }
