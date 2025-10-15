@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct DiaryEntryView: View {    
+struct DiaryEntryView: View {
     init(searchString: String = "", sortOrder: [SortDescriptor<DiaryEntry>] = []) {
         _diaryEntry = Query(
             filter: #Predicate<DiaryEntry> { entry in
@@ -29,7 +29,7 @@ struct DiaryEntryView: View {
             sort: sortOrder
         )
     }
-
+    
     
     @Query var diaryEntry: [DiaryEntry]
     
@@ -42,22 +42,71 @@ struct DiaryEntryView: View {
         }
     }
     
-    private var dateFormatter: DateFormatter {
+    func delete(_ entry: DiaryEntry) {
+        modelContext.delete(entry)
+    }
+    
+    private static let cachedDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         return formatter
-    }
+    }()
+    
+    private var dateFormatter: DateFormatter { Self.cachedDateFormatter }
     
     var body: some View {
-        List {
-            ForEach(diaryEntry) { diaryEntry in
-                NavigationLink(value: diaryEntry) {
-                    Text(diaryEntry.details)
-                    Text(dateFormatter.string(from: diaryEntry.createdAt))
+        ScrollView {
+            LazyVStack(spacing: 14) {
+                ForEach(diaryEntry) { entry in
+                    HStack(alignment: .top, spacing: 12) {
+                        NavigationLink(value: entry) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(entry.details.isEmpty ? "(Sem descrição)" : entry.details)
+                                    .font(.default)
+                                    .foregroundStyle(.primary)
+                                    .multilineTextAlignment(.leading)
+                                    .contentTransition(.opacity)
+                                
+                                Divider()
+                                
+                                Text(dateFormatter.string(from: entry.createdAt))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .minimumScaleFactor(0.9)
+                                
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(.thinMaterial)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(.separator, lineWidth: 0.5)
+                    )
+                    .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .contextMenu {
+                        NavigationLink(value: entry) {
+                            Label("Editar", systemImage: "pencil")
+                        }
+                        Button(role: .destructive) {
+                            delete(entry)
+                        } label: {
+                            Label("Excluir", systemImage: "trash")
+                        }
+                    }
                 }
             }
-            .onDelete(perform: deletePeople)
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .animation(.snappy, value: diaryEntry)
         }
     }
 }

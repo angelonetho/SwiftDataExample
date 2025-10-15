@@ -24,6 +24,8 @@ struct EditDiaryEntryView: View {
     @Bindable var diaryEntry: DiaryEntry
     
     @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @State private var showDeleteAlert = false
     
     @Binding var navigationPath: NavigationPath
     
@@ -42,7 +44,7 @@ struct EditDiaryEntryView: View {
     func loadPhotos() {
         let items = selectedItems
         guard !items.isEmpty else { return }
-
+        
         Task(priority: .userInitiated) {
             var newDatas: [Data] = []
             for item in items {
@@ -62,17 +64,37 @@ struct EditDiaryEntryView: View {
     var body: some View {
         
         Form {
+            Section("Notas") {
+                ZStack(alignment: .topLeading) {
+                    if diaryEntry.details.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        Text("Detalhes sobre o que aconteceu")
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 5)
+                    }
+                    TextEditor(text: $diaryEntry.details)
+                        .frame(minHeight: 180)
+                        .textInputAutocapitalization(.sentences)
+                        .autocorrectionDisabled(false)
+                        .scrollContentBackground(.hidden)
+                        .padding(.horizontal, -4)
+                }
+            }
+            
             if let photos = diaryEntry.photos, !photos.isEmpty {
                 ForEach(photos, id: \.self) { data in
                     if let uiImage = UIImage(data: data) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .stroke(Color.secondary.opacity(0.25), lineWidth: 1)
+                            )
                     }
                 }
             }
-
-
             
             Section {
                 PhotosPicker(selection: $selectedItems,
@@ -82,55 +104,37 @@ struct EditDiaryEntryView: View {
                 }
             }
             
-            Section("Tags") {
-                ForEach(tags) { tag in
-                    let isOn = Binding(
-                        get: { diaryEntry.tags?.contains(where: { $0.id == tag.id }) ?? false },
-                        set: { on in
-                            if on {
-                                diaryEntry.tags = (diaryEntry.tags ?? []) + [tag]
-                            } else {
-                                diaryEntry.tags?.removeAll { $0.id == tag.id }
-                                if diaryEntry.tags?.isEmpty == true { diaryEntry.tags = nil }
-                            }
-                        }
-                    )
-                    Toggle(tag.name, isOn: isOn)
-                }
-
-                Button("Adicionar uma nova tag", action: addTag)
-            }
+            EmotionSelectorView(selectedEmotions: $diaryEntry.emotions, emotions: emotions, onAddEmotion: addEmotion)
             
-            Section("Emoções") {
-                ForEach(emotions) { emotion in
-                    let isOn = Binding(
-                        get: { diaryEntry.emotions?.contains(where: { $0.id == emotion.id }) ?? false },
-                        set: { on in
-                            if on {
-                                diaryEntry.emotions = (diaryEntry.emotions ?? []) + [emotion]
-                            } else {
-                                diaryEntry.emotions?.removeAll { $0.id == emotion.id }
-                                if diaryEntry.emotions?.isEmpty == true { diaryEntry.emotions = nil }
-                            }
-                        }
-                    )
-                    Toggle(emotion.name, isOn: isOn)
-                }
-
-                Button("Adicionar uma nova emoção", action: addEmotion)
-            }
-            
-            Section("Notas") {
-                TextField("Detalhes sobre o que aconteceu", text: $diaryEntry.details, axis: .vertical)
-            }
+            TagSelectorView(selectedTags: $diaryEntry.tags, tags: tags, onAddTag: addTag)
         }
         .navigationTitle("Editar Entrada do Diário")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(role: .destructive) {
+                    showDeleteAlert = true
+                } label: {
+                    Label("Excluir", systemImage: "trash")
+                }
+                .accessibilityIdentifier("deleteDiaryEntryButton")
+            }
+        }
+        .alert("Excluir entrada?", isPresented: $showDeleteAlert) {
+            Button("Cancelar", role: .cancel) { }
+            Button("Excluir", role: .destructive) {
+                modelContext.delete(diaryEntry)
+                try? modelContext.save()
+                dismiss()
+            }
+        } message: {
+            Text("Esta ação não pode ser desfeita.")
+        }
         .navigationDestination(for: Tag.self) { tag in
-                EditTagView(tag: tag)
+            EditTagView(tag: tag)
         }
         .navigationDestination(for: Emotion.self) { emotion in
-                EditEmotionView(emotion: emotion)
+            EditEmotionView(emotion: emotion)
         }
         .onChange(of: selectedItems, loadPhotos)
     }
@@ -139,7 +143,7 @@ struct EditDiaryEntryView: View {
 #Preview {
     do {
         let previewer = try Previewer()
-
+        
         return EditDiaryEntryView(diaryEntry: previewer.diaryEntry, navigationPath: .constant(NavigationPath()))
             .modelContainer(previewer.container)
     } catch {

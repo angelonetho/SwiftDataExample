@@ -16,7 +16,7 @@ struct ContentView: View {
     
     @State private var searchText = ""
     
-    @State private var sortOrder = [SortDescriptor(\DiaryEntry.details)]
+    @State private var sortOrder = [SortDescriptor(\DiaryEntry.createdAt, order: .reverse)]
     
     @Query(sort: [SortDescriptor(\Tag.name, order: .forward)])
     private var tags: [Tag]
@@ -46,7 +46,7 @@ struct ContentView: View {
                         Label("Exportar Relatório", systemImage: "square.and.arrow.up")
                     }
                     
-                    Button("Adicionar nova entrada", systemImage: "plus", action: addDiaryEntry)
+                    
                     
                     Menu("Sort", systemImage: "arrow.up.arrow.down") {
                         Picker("Sort", selection: $sortOrder) {
@@ -56,7 +56,9 @@ struct ContentView: View {
                                 .tag([SortDescriptor(\DiaryEntry.createdAt, order: .forward)])
                         }
                     }
-
+                    
+                    Button("Adicionar nova entrada", systemImage: "plus", action: addDiaryEntry)
+                    
                 }
                 .searchable(text: $searchText, prompt: "Pesquisar")
                 .searchSuggestions {
@@ -82,3 +84,4 @@ struct ContentView: View {
         return Text("Failed to create preview: \(error.localizedDescription)")
     }
 }
+

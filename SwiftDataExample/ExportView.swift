@@ -42,7 +42,7 @@ struct ExportView: View {
         }
         return nil
     }
-
+    
     private var emotionFrequencies: [(name: String, count: Int)] {
         let names = filteredEntries.flatMap { $0.emotions?.map { $0.name } ?? [] }
         let counts = names.reduce(into: [String: Int]()) { $0[$1, default: 0] += 1 }
@@ -53,7 +53,7 @@ struct ExportView: View {
                 return lhs.count > rhs.count
             }
     }
-
+    
     private var exportJSONString: String {
         let iso = ISO8601DateFormatter()
         let items: [[String: Any]] = filteredEntries.map { entry in
@@ -79,15 +79,13 @@ struct ExportView: View {
         }
         return ""
     }
-
+    
     private var exportHumanReadableString: String {
         guard !filteredEntries.isEmpty else { return "Sem entradas no período selecionado." }
-
-        // Cabeçalho e período
+        
         let header = "Exportação do Diário"
         let period = "Período: \(startDate.formatted(date: .abbreviated, time: .omitted)) – \(endDate.formatted(date: .abbreviated, time: .omitted))"
-
-        // Resumo de emoções
+        
         var summaryLines: [String] = ["Resumo de Emoções:"]
         if emotionFrequencies.isEmpty {
             summaryLines.append("- (Sem emoções registradas)")
@@ -97,8 +95,7 @@ struct ExportView: View {
             }
         }
         let summaryBlock = summaryLines.joined(separator: "\n")
-
-        // Entradas detalhadas
+        
         let separator = String(repeating: "—", count: 18)
         let entryBlocks: [String] = filteredEntries.map { entry in
             let details = entry.details.isEmpty ? "(Sem descrição)" : entry.details
@@ -115,8 +112,7 @@ struct ExportView: View {
                 separator
             ].joined(separator: "\n")
         }
-
-        // Monta o corpo completo
+        
         let parts = [
             header,
             period,
@@ -126,7 +122,7 @@ struct ExportView: View {
             "Entradas:",
             entryBlocks.joined(separator: "\n")
         ]
-
+        
         return parts.joined(separator: "\n")
     }
     
@@ -165,10 +161,6 @@ struct ExportView: View {
                     }
                 }
                 .padding(12)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(.thinMaterial)
-                )
             }
             
             Section(header: Text("Entradas (\(filteredEntries.count))")) {
@@ -198,11 +190,9 @@ struct ExportView: View {
             }
         }
         .onChange(of: startDate) { _, newValue in
-            // Garante que a data final nunca seja anterior à inicial
             if endDate < newValue { endDate = newValue }
         }
         .onChange(of: endDate) { _, newValue in
-            // Garante que o intervalo seja válido
             if newValue < startDate { startDate = newValue }
         }
     }
